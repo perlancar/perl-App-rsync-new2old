@@ -1,5 +1,12 @@
 Revision history for App-rsync-new2old
 
+0.004   2016-12-15 (PERLANCAR)
+
+	- No functional changes.
+
+        - Document the --create-target-if-not-exists option (and the others).
+
+
 0.003   2016-12-15 (PERLANCAR)
 
 	- No functional changes.
