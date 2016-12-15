@@ -1,5 +1,10 @@
 Revision history for App-rsync-new2old
 
+0.005   2016-12-15 (PERLANCAR)
+
+	- Handle 'source' vs 'source/' a la rsync.
+
+
 0.004   2016-12-15 (PERLANCAR)
 
 	- No functional changes.
