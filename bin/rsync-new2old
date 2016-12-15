@@ -5,7 +5,18 @@
 
 use strict;
 use warnings;
+
+use File::Path qw(make_path);
+use File::Spec;
 use Getopt::Long;
+
+sub process_path {
+    my $path = shift;
+    my $path_ends_in_slash = $path =~ s{/+\z}{} ? 1:0;
+    my $abs_path = File::Spec->rel2abs($path);
+    my (undef, undef, $path_leaf) = File::Spec->splitpath($abs_path);
+    return ($abs_path, $path_leaf, $path_ends_in_slash);
+}
 
 sub find_newest_mtime {
     my $path = shift;
@@ -78,28 +89,32 @@ die "rsync-new2old: Please specify both source and target\n"
 
 die "rsync-new2old: Can't find source '$source', must already exist and a local path\n"
     unless -e $source;
+my ($abs_source, $source_leaf, $source_ends_in_slash) = process_path($source);
+my ($abs_target, $target_leaf, $target_ends_in_slash) = process_path($target);
+my $real_target = $source_ends_in_slash ? $target : "$abs_target/$source_leaf";
 if ($Opts{create_target_if_not_exists}) {
-    unless (-e $target) {
+    unless (-e $real_target) {
         if (-d $source) {
-            mkdir $target, 0755 or die "rsync-new2old: Can't mkdir '$target': $!\n";
+            make_path($real_target) or die "rsync-new2old: Can't make_path '$real_target': $!\n";
         } else {
-            open my $fh, ">", $target or die "rsync-new2old: Can't create file '$target': $!\n";
+            open my $fh, ">", $real_target or die "rsync-new2old: Can't create file '$real_target': $!\n";
             close $fh;
         }
-        utime 0, 0, $target or die "rsync-new2old: Can't set mtime of '$target': $!\n";
+        utime 0, 0, $real_target or die "rsync-new2old: Can't set mtime of '$real_target': $!\n";
     }
 } else {
-    die "rsync-new2old: Can't find target '$target', must already exist and a local path\n"
-        unless -e $target;
+    die "rsync-new2old: Can't find target '$real_target', must already exist and a local path\n"
+        unless -e $real_target;
 }
+
 my ($newest_mtime_source, $newest_path_source) = find_newest_mtime($source);
-my ($newest_mtime_target, $newest_path_target) = find_newest_mtime($target);
+my ($newest_mtime_target, $newest_path_target) = find_newest_mtime($real_target);
 
 if ($newest_mtime_target > $newest_mtime_source) {
     warn sprintf("rsync-new2old: Aborting rsync from '%s' to '%s' ".
                      "because newest file/subdir in source ('%s', mtime %s) is older than ".
                          "newest file/subdir in target ('%s', mtime %s)\n",
-                 $source, $target,
+                 $source, $real_target,
                  $newest_path_source, scalar(localtime $newest_mtime_source),
                  $newest_path_target, scalar(localtime $newest_mtime_target),
              );
