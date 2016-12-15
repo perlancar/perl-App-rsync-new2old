@@ -141,8 +141,8 @@ However, sometimes I add/delete stuffs from this directory on one computer (say
 B) instead of on another (A). Then I forget and synchronize the media directory
 from A to B instead of B to A. The changes in B are then lost.
 
-This tool, B<rsync-new2old> is a simple rsync wrapper that will first check that
-the newest modification filestamp (mtime) of file/subdirectory in source
+This tool, B<rsync-new2old>, is a simple rsync wrapper that will first check
+that the newest modification filestamp (mtime) of file/subdirectory in source
 directory is not older than the newest mtime of file/subdirectory in target
 directory. If that check passes, it runs rsync. If not, it aborts.
 
