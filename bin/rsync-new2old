@@ -31,11 +31,9 @@ sub find_newest_mtime {
     ($mtime, $path);
 }
 
-my ($source, $target);
+my %Opts = (create_target_if_not_exists => 0);
 
-my @orig_argv = @ARGV;
-
-Getopt::Long::Configure('bundling', 'pass_through', 'permute');
+Getopt::Long::Configure('bundling', 'pass_through', 'no_auto_abbrev', 'permute');
 GetOptions(
     'help|h|?' => sub {
         print <<'_';
@@ -44,6 +42,8 @@ Usage: rsync-new2old [options] <source> <target>
 Options:
   --help, -h, -?  Show this message and exit.
   --version       Show program version and exit.
+  --create-target-if-not-exists
+                  Create target if not exists.
 
 All the other options will be passed to rsync.
 
@@ -57,25 +57,41 @@ _
             ($main::DATE ? " ($main::DATE)" : ""), "\n";
         exit 0;
     },
-    '<>' => sub {
-        if ($_[0] =~ /\A-/) {
-            # an option, skip
-        } elsif (!defined($source)) {
-            $source = $_[0];
-        } elsif (!defined($target)) {
-            $target = $_[0];
-        }
-    },
+    'create-target-if-not-exists' => \$Opts{create_target_if_not_exists},
 );
 
-unless (defined $source && defined $target) {
-    die "rsync-new2old: Please specify both source and target\n";
+my ($source, $target);
+for (@ARGV) {
+    if (/\A-/) {
+        next;
+    } elsif (!defined($source)) {
+        $source = $_;
+    } elsif (!defined($target)) {
+        $target = $_;
+    } else {
+        last;
+    }
 }
+#use DD; dd {source=>$source, target=>$target, opts=>\%Opts};
+die "rsync-new2old: Please specify both source and target\n"
+    unless defined $source && defined $target;
 
 die "rsync-new2old: Can't find source '$source', must already exist and a local path\n"
     unless -e $source;
-die "rsync-new2old: Can't find target '$target', must already exist and a local path\n"
-    unless -e $target;
+if ($Opts{create_target_if_not_exists}) {
+    unless (-e $target) {
+        if (-d $source) {
+            mkdir $target, 0755 or die "rsync-new2old: Can't mkdir '$target': $!\n";
+        } else {
+            open my $fh, ">", $target or die "rsync-new2old: Can't create file '$target': $!\n";
+            close $fh;
+        }
+        utime 0, 0, $target or die "rsync-new2old: Can't set mtime of '$target': $!\n";
+    }
+} else {
+    die "rsync-new2old: Can't find target '$target', must already exist and a local path\n"
+        unless -e $target;
+}
 my ($newest_mtime_source, $newest_path_source) = find_newest_mtime($source);
 my ($newest_mtime_target, $newest_path_target) = find_newest_mtime($target);
 
@@ -90,7 +106,7 @@ if ($newest_mtime_target > $newest_mtime_source) {
     exit 2;
 }
 
-exec {"rsync"} "rsync", @orig_argv;
+exec {"rsync"} "rsync", @ARGV;
 
 # ABSTRACT: Rsync wrapper to make sure we sync new data to old, not otherwise
 # PODNAME:
