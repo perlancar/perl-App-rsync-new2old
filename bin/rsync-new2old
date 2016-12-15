@@ -151,6 +151,15 @@ Note that C<source> and C<target> must be local filesystem paths, so this
 wrapper cannot be used if one of source/target is a remote path.
 
 
+=head1 OPTIONS
+
+=head2 --help, -h, -?
+
+=head2 --version
+
+=head2 --create-target-if-not-exists
+
+
 =head1 SEE ALSO
 
 Other one-way mirroring tools:
