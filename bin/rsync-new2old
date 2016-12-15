@@ -123,7 +123,7 @@ Use like you would use B<rsync>:
 Rsync is a fast and versatile directory mirroring tool. I often use it to
 synchronize my large media/software directory from one computer to another.
 However, sometimes I add/delete stuffs from this directory on one computer (say
-B) instead of on another (A). Then I forgot and synchronize the media directory
+B) instead of on another (A). Then I forget and synchronize the media directory
 from A to B instead of B to A. The changes in B are then lost.
 
 This tool, B<rsync-new2old> is a simple rsync wrapper that will first check that
