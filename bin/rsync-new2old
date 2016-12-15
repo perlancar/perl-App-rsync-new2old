@@ -190,11 +190,6 @@ to another filesystem efficiently. If you are synchronizing between two ZFS
 filesystems (even across network), this approach offers great performance and
 2-way mirroring capability.
 
-=item * L<gitbunch> from L<Git::Bunch>
-
-When synchronizing a file or non-repo directory, will do the same newest-mtime
-check first like B<rsync-new2old>.
-
 =back
 
 A safer solution when you want to synchronize two directories while maintaining
