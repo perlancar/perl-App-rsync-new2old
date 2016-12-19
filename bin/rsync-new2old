@@ -162,8 +162,10 @@ while the newest mtime of C<target> is C<2016-12-06T00:00:00> (the mtime of
 C<file2> or C<dir1>). B<rsync-new2old> will allow synchronizing from C<source>
 to C<target>.
 
-Note that C<source> and C<target> must be local filesystem paths, so this
-wrapper cannot be used if one of source/target is a remote path.
+Caveats: Note that C<source> and C<target> must be local filesystem paths, so
+this wrapper cannot be used if one of source/target is a remote path. Also, this
+script currently doesn't regard rsync --exclude options. Please consider the
+alternatives mentioned in the See Also section.
 
 
 =head1 OPTIONS
@@ -187,8 +189,10 @@ Other one-way mirroring tools:
 
 Filesystems like ZFS also record changes to filesystems and can propagate them
 to another filesystem efficiently. If you are synchronizing between two ZFS
-filesystems (even across network), this approach offers great performance and
-2-way mirroring capability.
+filesystems (even across network), this approach offers great performance (e.g.
+detect renames and can propgate this change quickly instead of rsync which must
+delete files with old names + re-copy the same files with new names) and 2-way
+mirroring capability.
 
 =back
 
