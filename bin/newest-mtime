@@ -1,0 +1,89 @@
+#!perl
+
+# DATE
+# VERSION
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+
+sub find_newest_mtime {
+    my $path = shift;
+
+    my @st = lstat($path) or return (0, $path);
+    my $is_dir = (-d _);
+    my $mtime = $st[9];
+    if ($is_dir) {
+        opendir my($dh), $path or do {
+            warn "newest-mtime: Can't opendir $path: $!, skipped\n";
+            return (undef, $path);
+        };
+        my @entries = grep { $_ ne '.' && $_ ne '..' } readdir($dh);
+        my @res = map { [find_newest_mtime("$path/$_")] } @entries;
+        my $max_path = $path;
+        my $max_mtime = $mtime;
+        for my $r (@res) {
+            next unless defined $r->[0];
+            if ($r->[0] > $max_mtime) {
+                $max_mtime = $r->[0];
+                $max_path = $r->[1];
+            }
+        }
+        return ($max_mtime, $max_path);
+    }
+    ($mtime, $path);
+}
+
+my %Opts = (raw=>0);
+
+Getopt::Long::Configure('bundling', 'pass_through', 'no_auto_abbrev', 'permute');
+GetOptions(
+    'help|h|?' => sub {
+        print <<'_';
+Usage: newest-mtime [options] <dir> ...
+
+Options:
+  --help, -h, -?  Show this message and exit.
+  --version       Show program version and exit.
+  --raw           Show mtime in raw format.
+_
+        exit 0;
+    },
+    'version' => sub {
+        no warnings 'once';
+        print "newest-mtime version ", ($main::VERSION || "dev"),
+            ($main::DATE ? " ($main::DATE)" : ""), "\n";
+        exit 0;
+    },
+    'raw' => \$Opts{raw},
+);
+
+unless (@ARGV) {
+    die "Please specify at least one directory\n";
+}
+
+for (@ARGV) {
+    my @res = find_newest_mtime($_);
+    printf "%s\t%s\t%s\n",
+        !defined($res[0]) ? "-" : ($Opts{raw} ? $res[0] : scalar localtime($res[0])),
+        $res[1] // "-",
+        $_;
+}
+
+# ABSTRACT: Show mtime and name of newest file/subdir in a directory
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % newest-mtime [options] <dir> ...
+
+
+=head1 DESCRIPTION
+
+
+=head1 SEE ALSO
+
+L<rsync-new2old>
+
+=
