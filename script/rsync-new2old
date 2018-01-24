@@ -8,6 +8,7 @@ use warnings;
 
 use File::Path qw(make_path);
 use File::Spec;
+use File::Which;
 use Getopt::Long;
 
 sub process_path {
@@ -121,7 +122,8 @@ if ($newest_mtime_target > $newest_mtime_source) {
     exit 2;
 }
 
-exec {"rsync"} "rsync", @ARGV;
+my $rsync_cmd = which("rsynccolor") ? "rsynccolor" : "rsync";
+exec {$rsync_cmd} $rsync_cmd, @ARGV;
 
 # ABSTRACT: Rsync wrapper to make sure we sync new data to old, not otherwise
 # PODNAME:
