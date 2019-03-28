@@ -122,7 +122,8 @@ if ($newest_mtime_target > $newest_mtime_source) {
     exit 2;
 }
 
-my $rsync_cmd = which("rsynccolor") ? "rsynccolor" : "rsync";
+my $rsync_cmd = $ENV{RSYNC_NEW2OLD_RSYNC_CMD} ||
+    (which("rsynccolor") ? "rsynccolor" : "rsync");
 exec {$rsync_cmd} $rsync_cmd, @ARGV;
 
 # ABSTRACT: Rsync wrapper to make sure we sync new data to old, not otherwise
@@ -179,20 +180,28 @@ alternatives mentioned in the See Also section.
 =head2 --create-target-if-not-exists
 
 
+=head1 ENVIRONMENT
+
+=head2 RSYNC_NEW2OLD_RSYNC_CMD
+
+String. Rsync command to use. Defaults to L<rsynccolor> (if available on PATH)
+or C<rsync>. Can be used to chain several rsync wrappers together.
+
+
 =head1 SEE ALSO
+
+B<rsync>, L<rsynccolor>.
 
 Other one-way mirroring tools:
 
 =over
-
-=item * B<rsync>
 
 =item * ZFS send and receive, L<https://docs.oracle.com/cd/E18752_01/html/819-5461/gbchx.html>
 
 Filesystems like ZFS also record changes to filesystems and can propagate them
 to another filesystem efficiently. If you are synchronizing between two ZFS
 filesystems (even across network), this approach offers great performance (e.g.
-detect renames and can propgate this change quickly instead of rsync which must
+detect renames and can propagate this change quickly instead of rsync which must
 delete files with old names + re-copy the same files with new names) and 2-way
 mirroring capability.
 
