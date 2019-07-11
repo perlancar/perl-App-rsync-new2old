@@ -1,42 +1,42 @@
-0.008   2019-03-28 (PERLANCAR)
+0.008   2019-03-28  Released-By: PERLANCAR
 
 	- Observe RSYNC_NEW2OLD_RSYNC_CMD environment variable.
 
 
-0.007   2018-01-24 (PERLANCAR)
+0.007   2018-01-24  Released-By: PERLANCAR
 
 	- [ux] Use rsynccolor if available.
 
 
-0.006   2017-02-07 (PERLANCAR)
+0.006   2017-02-07  Released-By: PERLANCAR
 
         - Add utility: newest-mtime.
 
 
-0.005   2016-12-15 (PERLANCAR)
+0.005   2016-12-15  Released-By: PERLANCAR
 
 	- Handle 'source' vs 'source/' a la rsync.
 
 
-0.004   2016-12-15 (PERLANCAR)
+0.004   2016-12-15  Released-By: PERLANCAR
 
 	- No functional changes.
 
         - Document the --create-target-if-not-exists option (and the others).
 
 
-0.003   2016-12-15 (PERLANCAR)
+0.003   2016-12-15  Released-By: PERLANCAR
 
 	- No functional changes.
 
 	- [dist] Forgot to specify $VERSION for main module.
 
 
-0.002   2016-12-15 (PERLANCAR)
+0.002   2016-12-15  Released-By: PERLANCAR
 
 	- Add option: --create-target-if-not-exists.
 
 
-0.001   2016-12-15 (PERLANCAR)
+0.001   2016-12-15  Released-By: PERLANCAR
 
         - First release.
