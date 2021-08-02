@@ -2,3 +2,4 @@ App-rsync-new2old-*
 .build
 *~
 nytprof*
+.DS_Store
